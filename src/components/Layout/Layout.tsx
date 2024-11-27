@@ -1,8 +1,6 @@
 import React from "react";
 import { Navbar, Container, Nav, Row, Col } from "react-bootstrap";
 import { Outlet, Link } from "react-router-dom";
-import navbarStyles from "./Navbar.module.css";
-import sidebarStyles from "./Sidebar.module.css";
 
 /**
  * Check out the Navbar component from React Bootstrap:
