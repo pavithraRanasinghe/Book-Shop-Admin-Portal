@@ -1,0 +1,31 @@
+.table-dark {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.table-dark th {
+  font-weight: bold;
+  text-align: center;
+}
+
+.table-dark th:first-child,
+.table-dark th:last-child {
+  text-align: center;
+}
+
+.align-middle td {
+  vertical-align: middle;
+}
+
+.badge-success {
+  background-color: #28a745;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+}
+
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

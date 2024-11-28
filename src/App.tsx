@@ -3,6 +3,9 @@ import "./App.css";
 import Layout from "./components/Layout/Layout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Login from "./pages/Login/Login";
+import Book from "./pages/Book/Book";
+import Users from "./pages/Users/Users";
+import Orders from "./pages/Orders/Orders";
 
 function App() {
   const location = useLocation();
@@ -13,6 +16,9 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="book" element={<Book />} />
+          <Route path="user" element={<Users />} />
+          <Route path="orders" element={<Orders />} />
         </Route>
       ) : (
         <Route>

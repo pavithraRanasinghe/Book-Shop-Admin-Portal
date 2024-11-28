@@ -1,54 +1,69 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar, Container, Nav, Row, Col } from "react-bootstrap";
 import { Outlet, Link } from "react-router-dom";
+import profileImage from "../../assets/images/admin.png";
+import styles from "./Layout.module.css";
 
-/**
- * Check out the Navbar component from React Bootstrap:
- * https://react-bootstrap.netlify.app/docs/components/navbar
- *
- * https://react-bootstrap.netlify.app/docs/components/offcanvas -- For the sidebar
- */
 const Layout: React.FC = () => {
+  const [dateTime, setDateTime] = useState<string>("");
+
+  // Update the date and time every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setDateTime(now.toLocaleString());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
-      <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
-        <Container>
-          <Navbar.Brand as={Link} to="/">
-            Admin Dashboard
+      {/* Top Navbar */}
+      <Navbar bg="light" expand="lg" className={styles.navbar}>
+        <Container fluid>
+          <Navbar.Brand as={Link} to="/" className={styles.brand}>
+            Admin Panel
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link as={Link} to="/dashboard">
-                Dashboard
-              </Nav.Link>
-              <Nav.Link as={Link} to="/users">
-                Users
-              </Nav.Link>
-              <Nav.Link as={Link} to="/reports">
-                Reports
+          <Navbar.Toggle aria-controls="navbarScroll" />
+          <Navbar.Collapse id="navbarScroll" className="justify-content-end">
+            <div className={styles.dateTime}>{dateTime}</div>
+
+            <Nav>
+              <Nav.Link href="#profile" className={styles.profile}>
+                <img
+                  src={profileImage}
+                  alt="Profile"
+                  className={styles.profilePic}
+                />
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <Container fluid>
+      {/* Sidebar and Content Layout */}
+      <Container fluid className={styles.layout}>
         <Row>
-          <Col md={2} className="bg-light vh-100 p-3">
+          {/* Sidebar */}
+          <Col md={2} className={styles.sidebar}>
             <Nav className="flex-column">
-              <Nav.Link as={Link} to="/dashboard">
-                Dashboard
+              <Nav.Link as={Link} to="/dashboard" className={styles.navItem}>
+                <i className="bi bi-speedometer2"></i> Dashboard
               </Nav.Link>
-              <Nav.Link as={Link} to="/users">
-                Users
+              <Nav.Link as={Link} to="/book" className={styles.navItem}>
+                <i className="bi bi-book"></i> Books
               </Nav.Link>
-              <Nav.Link as={Link} to="/reports">
-                Reports
+              <Nav.Link as={Link} to="/user" className={styles.navItem}>
+                <i className="bi bi-people"></i>Users
+              </Nav.Link>
+              <Nav.Link as={Link} to="/orders" className={styles.navItem}>
+                <i className="bi bi-gear"></i> Orders
               </Nav.Link>
             </Nav>
           </Col>
-          <Col md={10} className="p-4">
+
+          {/* Main Content */}
+          <Col md={10} className={styles.content}>
             <Outlet />
           </Col>
         </Row>
