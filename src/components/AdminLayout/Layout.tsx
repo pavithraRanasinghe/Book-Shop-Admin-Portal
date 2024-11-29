@@ -21,7 +21,7 @@ const Layout: React.FC = () => {
       {/* Top Navbar */}
       <Navbar bg="light" expand="lg" className={styles.navbar}>
         <Container fluid>
-          <Navbar.Brand as={Link} to="/" className={styles.brand}>
+          <Navbar.Brand as={Link} to="/admin" className={styles.brand}>
             Admin Panel
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
@@ -47,16 +47,20 @@ const Layout: React.FC = () => {
           {/* Sidebar */}
           <Col md={2} className={styles.sidebar}>
             <Nav className="flex-column">
-              <Nav.Link as={Link} to="/dashboard" className={styles.navItem}>
+              <Nav.Link
+                as={Link}
+                to="/admin/dashboard"
+                className={styles.navItem}
+              >
                 <i className="bi bi-speedometer2"></i> Dashboard
               </Nav.Link>
-              <Nav.Link as={Link} to="/book" className={styles.navItem}>
+              <Nav.Link as={Link} to="/admin/book" className={styles.navItem}>
                 <i className="bi bi-book"></i> Books
               </Nav.Link>
-              <Nav.Link as={Link} to="/user" className={styles.navItem}>
+              <Nav.Link as={Link} to="/admin/user" className={styles.navItem}>
                 <i className="bi bi-people"></i>Users
               </Nav.Link>
-              <Nav.Link as={Link} to="/orders" className={styles.navItem}>
+              <Nav.Link as={Link} to="/admin/orders" className={styles.navItem}>
                 <i className="bi bi-gear"></i> Orders
               </Nav.Link>
             </Nav>

@@ -1,5 +1,5 @@
 /* General Styling */
-.loginPage {
+.registerPage {
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -8,7 +8,7 @@
   padding: 2rem;
 }
 
-.loginContainer {
+.registerContainer {
   display: flex;
   width: 80%;
   max-width: 1200px;
@@ -21,7 +21,7 @@
 
 /* Left Section */
 .leftSection {
-  flex: 2; 
+  flex: 1.5;
   background-color: #e7f3ed;
   display: flex;
   flex-direction: column;
@@ -36,16 +36,26 @@
 
 .leftImage {
   width: 100%;
-  height: auto;
+  height: 100vh;
   border-radius: 8px;
-  object-fit: cover; 
+  object-fit: cover;
   opacity: 0.85;
 }
 
+.textWrapper h2 {
+  font-size: 1.8rem; /* Slightly larger heading */
+  margin-bottom: 0.5rem;
+}
+
+.textWrapper p {
+  font-size: 1rem; /* Slightly larger text */
+  color: #555;
+  line-height: 1.6;
+}
 
 /* Right Section */
 .rightSection {
-  flex: 1;
+  flex: 1; /* Allocate less space to the right section */
   padding: 2rem 3rem;
   display: flex;
   flex-direction: column;
@@ -59,33 +69,11 @@
   margin-bottom: 1rem;
 }
 
-.welcomeText {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.loginForm {
+.registerForm {
   width: 100%;
 }
 
-.extraOptions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.forgotPassword {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.forgotPassword:hover {
-  text-decoration: underline;
-}
-
-.loginButton {
+.registerButton {
   background-color: #007bff;
   border: none;
   width: 100%;
@@ -97,56 +85,16 @@
   color: #ffffff;
 }
 
-.divider {
-  text-align: center;
-  margin: 1.5rem 0;
-  position: relative;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  display: inline-block;
-  width: 40%;
-  height: 1px;
-  background-color: #ddd;
-  position: absolute;
-  top: 50%;
-}
-
-.divider::before {
-  left: 10%;
-}
-
-.divider::after {
-  right: 10%;
-}
-
-
-.signupLink {
+.loginLink {
   text-align: center;
   margin-top: 1.5rem;
 }
 
-.signupLink a {
+.loginLink a {
   color: #007bff;
   text-decoration: none;
 }
 
-.signupLink a:hover {
+.loginLink a:hover {
   text-decoration: underline;
-}
-.googleButton {
-  background-color: #ffffff;
-  border: 1px solid #363636;
-  width: 100%;
-  padding: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 8px;
-  color: #007bff;
 }

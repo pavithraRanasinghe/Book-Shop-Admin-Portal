@@ -28,8 +28,8 @@ const Login: React.FC = () => {
 
         {/* Right Section - Login Form */}
         <div className={styles.rightSection}>
-          <h2 className={styles.logo}>Admin Panel</h2>
-          <h4 className={styles.welcomeText}>Welcome to Admin Panel</h4>
+          <h2 className={styles.logo}>E-Book Login Panel</h2>
+          <h4 className={styles.welcomeText}>Welcome to E-Book</h4>
           <Form onSubmit={handleLogin} className={styles.loginForm}>
             <Form.Group controlId="formEmail" className="mb-3">
               <Form.Label>Username or Email</Form.Label>
@@ -63,6 +63,10 @@ const Login: React.FC = () => {
             <Button type="submit" className={styles.loginButton}>
               Sign In
             </Button>
+
+            <div className={styles.divider}>or</div>
+
+            <Button className={styles.googleButton}>Sign Up</Button>
           </Form>
         </div>
       </div>
