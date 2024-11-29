@@ -1,0 +1,89 @@
+/* General Header Styling */
+.header {
+  background-color: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+/* Logo/Avatar */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #343a40;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Navigation Links */
+.navLink {
+  font-size: 1rem;
+  margin: 0 1rem;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.navLink:hover {
+  color: #007bff;
+}
+
+/* Search Input */
+.searchForm {
+  width: 250px;
+  margin-right: 1.5rem;
+}
+
+.searchInput {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+/* Icons Section */
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconLink {
+  font-size: 1.25rem;
+  color: #333;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.iconLink:hover {
+  color: #007bff;
+}
+
+/* Notification Dot */
+.notificationDot {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  background-color: #f00;
+  border-radius: 50%;
+}
+
+/* Profile Image */
+.profileImage {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}

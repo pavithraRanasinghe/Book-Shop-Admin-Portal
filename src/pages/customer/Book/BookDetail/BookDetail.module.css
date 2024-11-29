@@ -1,0 +1,16 @@
+/* Modal Content */
+.modalContent {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.modalImage {
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.modalDetails {
+  flex: 1;
+}

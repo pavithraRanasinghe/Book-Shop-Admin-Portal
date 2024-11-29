@@ -1,0 +1,86 @@
+/* Book Page Styling */
+.bookPage {
+  padding: 2rem 0;
+  background-color: #f8f9fa;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* Search Form */
+.searchForm {
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Book Card */
+.bookCard {
+  border: none;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.bookCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.bookImage {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+.bookTitle {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.bookAuthor {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.bookPrice {
+  font-size: 1rem;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.addToCartButton {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+.addToCartButton:hover {
+  background-color: #0056b3;
+}
+
+/* Category Title */
+.categoryTitle {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  font-weight: bold;
+  color: #333;
+}

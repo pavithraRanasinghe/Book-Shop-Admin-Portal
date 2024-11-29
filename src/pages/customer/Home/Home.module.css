@@ -1,0 +1,156 @@
+/* Home Page */
+.homePage {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* Hero Section */
+.heroSection {
+  background: linear-gradient(135deg, #007bff, #6c63ff);
+  color: #fff;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.heroButton {
+  background-color: #ffc107;
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.heroButton:hover {
+  background-color: #e0a800;
+  color: #fff;
+}
+
+/* Categories Section */
+/* Categories Section */
+.categoriesSection {
+  padding: 4rem 0;
+  background-color: #f8f9fa;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #007bff;
+}
+
+.categoryCard {
+  border: none;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.categoryCard:hover {
+  transform: translateY(-10px) scale(1.05); /* Lifts the card and enlarges slightly */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Adds a more prominent shadow */
+}
+
+.categoryImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover; /* Ensures the image fills the area proportionally */
+  transition: transform 0.3s ease; /* Smooth image zoom */
+}
+
+.categoryCard:hover .categoryImage {
+  transform: scale(1.1); /* Zooms in the image slightly */
+}
+
+.categoryTitle {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.categoryCard:hover .categoryTitle {
+  color: #007bff; /* Changes the title color on hover */
+}
+/* Featured Books Section */
+.featuredBooksSection {
+  padding: 4rem 0;
+}
+
+.bookCard {
+  border: none;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bookImage {
+  border-radius: 8px;
+}
+
+.bookTitle {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+}
+
+.bookPrice {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.addToCartButton {
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.addToCartButton:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+/* Special Offer Section */
+.specialOfferSection {
+  background: #ffc107;
+  color: #000;
+  padding: 4rem 0;
+}
+
+.specialOfferTitle {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.specialOfferSubtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.specialOfferButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.specialOfferButton:hover {
+  background-color: #0056b3;
+}
