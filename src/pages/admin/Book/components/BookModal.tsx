@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Button, Row, Col, Alert } from "react-bootstrap";
 import styles from "./BookModal.module.css";
+import apiClient from "../../../../configs/ApiClient";
 
-interface Book {
-  id: number;
+interface BookData {
+  bookID: number; // TODO Optional for new books
   title: string;
   author: string;
+  genre?: string;
   price: number;
-  stock: number;
+  stockQuantity: number;
+  isbn?: string;
+  publishedDate?: string;
 }
 
 interface BookModalProps {
   show: boolean;
   onClose: () => void;
-  onSave: (book: Book) => void;
-  initialBook?: Partial<Book>;
+  onSave: (book: BookData) => void; // Callback to update parent state
+  initialBook?: Partial<BookData>;
   isEdit: boolean;
 }
 
@@ -25,31 +29,54 @@ const BookModal: React.FC<BookModalProps> = ({
   initialBook,
   isEdit,
 }) => {
-  const [book, setBook] = useState<Partial<Book>>(initialBook || {});
+  const [book, setBook] = useState<Partial<BookData>>(initialBook || {});
   const [error, setError] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
     setBook(initialBook || {});
     setError(""); // Clear errors when modal opens
   }, [initialBook]);
 
-  const handleChange = (field: keyof Book, value: string | number) => {
+  const handleChange = (field: keyof BookData, value: string | number) => {
     setBook({ ...book, [field]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       !book.title ||
       !book.author ||
       book.price === undefined ||
-      book.stock === undefined
+      book.stockQuantity === undefined
     ) {
-      setError("Please fill in all fields correctly.");
+      setError("Please fill in all required fields correctly.");
       return;
     }
+
     setError("");
-    onSave(book as Book);
-    onClose();
+    setIsSaving(true);
+
+    try {
+      const payload: any = {
+        title: book.title,
+        author: book.author,
+        genre: book.genre,
+        price: book.price,
+        stockQuantity: book.stockQuantity,
+        isbn: book.isbn,
+        publishedDate: book.publishedDate,
+      };
+
+      const response = await apiClient.post("/Book", payload);
+      onSave(response.data); // Notify parent with saved book data
+      onClose(); // Close the modal
+    } catch (err: any) {
+      setError(
+        err.response?.data || "Failed to save the book. Please try again."
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -107,14 +134,54 @@ const BookModal: React.FC<BookModalProps> = ({
             </Col>
             <Col md={6}>
               <Form.Group className={styles.formGroup} controlId="formStock">
-                <Form.Label>Stock</Form.Label>
+                <Form.Label>Stock Quantity</Form.Label>
                 <Form.Control
                   className={styles.formControl}
                   type="number"
                   placeholder="Enter stock quantity"
-                  value={book.stock || ""}
+                  value={book.stockQuantity || ""}
                   onChange={(e) =>
-                    handleChange("stock", parseInt(e.target.value, 10))
+                    handleChange("stockQuantity", parseInt(e.target.value, 10))
+                  }
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup} controlId="formGenre">
+                <Form.Label>Genre</Form.Label>
+                <Form.Control
+                  className={styles.formControl}
+                  type="text"
+                  placeholder="Enter genre"
+                  value={book.genre || ""}
+                  onChange={(e) => handleChange("genre", e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup} controlId="formISBN">
+                <Form.Label>ISBN</Form.Label>
+                <Form.Control
+                  className={styles.formControl}
+                  type="text"
+                  placeholder="Enter ISBN"
+                  value={book.isbn || ""}
+                  onChange={(e) => handleChange("isbn", e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={12}>
+              <Form.Group
+                className={styles.formGroup}
+                controlId="formPublishedDate"
+              >
+                <Form.Label>Published Date</Form.Label>
+                <Form.Control
+                  className={styles.formControl}
+                  type="date"
+                  value={book.publishedDate?.split("T")[0] || ""}
+                  onChange={(e) =>
+                    handleChange("publishedDate", e.target.value)
                   }
                 />
               </Form.Group>
@@ -127,6 +194,7 @@ const BookModal: React.FC<BookModalProps> = ({
           variant="secondary"
           className={styles.cancelButton}
           onClick={onClose}
+          disabled={isSaving}
         >
           Cancel
         </Button>
@@ -134,8 +202,9 @@ const BookModal: React.FC<BookModalProps> = ({
           variant="primary"
           className={styles.saveButton}
           onClick={handleSubmit}
+          disabled={isSaving}
         >
-          Save
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </Modal.Footer>
     </Modal>
