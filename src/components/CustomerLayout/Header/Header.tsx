@@ -11,26 +11,36 @@ import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import profileImage from "../../../assets/images/admin.png";
 import Cart from "../../../pages/customer/Cart/Cart";
+import contemporaryFictionImage from "../../../assets/images/cover/contemporary-fiction-night-time-book-cover-design-template-1be47835c3058eb42211574e0c4ed8bf_screen.jpg";
+import harryPotterImage from "../../../assets/images/cover/harry-potter-deathly-hallows-book-cover-i214933.jpg";
+import rustyMysteryImage from "../../../assets/images/cover/canva-brown-rusty-mystery-novel-book-cover-hG1QhA7BiBU.jpg";
+
+const cartItems = [
+  {
+    id: 1,
+    title: "The Enigmatic Night",
+    price: 12.99,
+    quantity: 1,
+    image: contemporaryFictionImage,
+  },
+  {
+    id: 2,
+    title: "Harry Potter: The Deathly Hallows",
+    price: 18.99,
+    quantity: 2,
+    image: harryPotterImage,
+  },
+  {
+    id: 3,
+    title: "Rusty Mystery",
+    price: 10.49,
+    quantity: 1,
+    image: rustyMysteryImage,
+  },
+];
 
 const Header: React.FC = () => {
   const [showCart, setShowCart] = useState(false);
-
-  const cartItems = [
-    {
-      id: 1,
-      title: "The Great Gatsby",
-      price: 10.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/150x200?text=Book+1",
-    },
-    {
-      id: 2,
-      title: "1984",
-      price: 8.99,
-      quantity: 2,
-      image: "https://via.placeholder.com/150x200?text=Book+2",
-    },
-  ];
 
   const handleRemoveItem = (id: number) => {
     console.log(`Removed item with id: ${id}`);

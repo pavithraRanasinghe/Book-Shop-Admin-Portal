@@ -14,7 +14,7 @@ interface CartItem {
 interface CartOffcanvasProps {
   show: boolean;
   onClose: () => void;
-  cartItems: CartItem[];
+  cartItems: CartItem[]; // Pass cart items using updated book data
   onRemoveItem: (id: number) => void;
 }
 
@@ -24,7 +24,7 @@ const Cart: React.FC<CartOffcanvasProps> = ({
   cartItems,
   onRemoveItem,
 }) => {
-  const navigatet = useNavigate();
+  const navigate = useNavigate();
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -32,7 +32,7 @@ const Cart: React.FC<CartOffcanvasProps> = ({
 
   const onCheckout = () => {
     onClose();
-    navigatet("/checkout");
+    navigate("/checkout");
   };
 
   return (
@@ -57,7 +57,13 @@ const Cart: React.FC<CartOffcanvasProps> = ({
                 <ListGroup.Item key={item.id} className={styles.cartItem}>
                   <Row>
                     <Col xs={3}>
-                      <Image src={item.image} alt={item.title} fluid rounded />
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fluid
+                        rounded
+                        className={styles.cartItemImage}
+                      />
                     </Col>
                     <Col xs={6}>
                       <p className={styles.itemTitle}>{item.title}</p>
