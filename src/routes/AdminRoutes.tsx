@@ -15,7 +15,7 @@ const AdminRoutes: React.FC = () => {
   return (
     <Routes>
       {!isLoginPage ? (
-        <Route path="/admin" element={<Layout />}>
+        <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="book" element={<Book />} />

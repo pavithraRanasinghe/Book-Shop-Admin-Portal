@@ -18,14 +18,20 @@ const Login: React.FC = () => {
         email,
         password,
       });
-      const { token } = response.data;
-      console.log("Login successful. Token:", token);
+      const { token, role } = response.data;
 
       // Store token (e.g., localStorage or context)
       localStorage.setItem("authToken", token);
+      localStorage.setItem("role", role);
 
       // Redirect to a dashboard or homepage
-      navigate("/");
+      if (role === "Admin") {
+        navigate("/admin/dashboard");
+      } else if (role === "customer") {
+        navigate("/");
+      } else {
+        console.log("Unknown role. Please contact support.");
+      }
     } catch (err: any) {
       if (err.response && err.response.data) {
         console.log(err.response.data);

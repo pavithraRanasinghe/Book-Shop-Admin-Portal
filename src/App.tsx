@@ -1,21 +1,35 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminRoutes from "./routes/AdminRoutes";
-import CustomerRoutes from "./routes/CustomerRoutes";
 import Login from "./pages/Login/Login";
 import Register from "./pages/customer/Register/Register";
+import CustomerRoutes from "./routes/CustomerRoutes";
 
-// Helper function to check if user is authenticated
-const isAuthenticated = () => {
-  // Check for the JWT token in localStorage (or wherever you store it)
-  return !!localStorage.getItem("authToken");
+// Helper function to check authentication and role
+const getUserRole = () => {
+  // Retrieve the user role and token from localStorage
+  const token = localStorage.getItem("authToken");
+  const role = localStorage.getItem("role");
+
+  if (!token || !role) return null;
+
+  return role;
 };
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  return isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />;
+// Protected Route Component for Role-Based Access
+const RoleProtectedRoute: React.FC<{
+  role: "Admin" | "Customer"; // Allowed roles
+  children: React.ReactNode;
+}> = ({ role, children }) => {
+  const userRole = getUserRole();
+
+  if (!userRole || userRole !== role) {
+    // If not authenticated, redirect to login
+    return <Navigate to="/login" replace />;
+  }
+
+  // If role matches, render the children
+  return <>{children}</>;
 };
 
 function App() {
@@ -25,9 +39,9 @@ function App() {
       <Route
         path="/admin/*"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute role="Admin">
             <AdminRoutes />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
@@ -35,9 +49,9 @@ function App() {
       <Route
         path="/*"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute role="Customer">
             <CustomerRoutes />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
