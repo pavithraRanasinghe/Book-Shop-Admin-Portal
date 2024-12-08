@@ -2,14 +2,38 @@ import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import styles from "./Login.module.css";
 import loginImage from "../../assets/images/pexels-rickyrecap-1907785.jpg";
+import apiClient from "../../configs/ApiClient";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Login successful! (Replace with actual login logic)");
+
+    try {
+      const response = await apiClient.post("/Auth", {
+        email,
+        password,
+      });
+      const { token } = response.data;
+      console.log("Login successful. Token:", token);
+
+      // Store token (e.g., localStorage or context)
+      localStorage.setItem("authToken", token);
+
+      // Redirect to a dashboard or homepage
+      navigate("/");
+    } catch (err: any) {
+      if (err.response && err.response.data) {
+        console.log(err.response.data);
+      } else {
+        console.log("An unexpected error occurred. Please try again.");
+      }
+      console.error("Login error:", err);
+    }
   };
 
   return (
