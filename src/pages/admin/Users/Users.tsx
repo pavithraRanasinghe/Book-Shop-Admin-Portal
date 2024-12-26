@@ -1,136 +1,151 @@
-import React, { useState } from "react";
-import { Table, Button, Badge, Card, Row, Col } from "react-bootstrap";
-import UserModal from "./component/UserModal";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Badge, Card, Row, Col, Spinner } from "react-bootstrap";
+import UserModal from "./component/UserModal"; // Assuming UserModal handles input and save
+import apiClient from "../../../configs/ApiClient";
 
-interface UserData {
-  id: number;
+export interface CustomerData {
+  userID: number;
   name: string;
   email: string;
-  role: string;
+  role: string; // "Admin", "RegisteredCustomer", "GuestCustomer"
   status: string; // "Active" or "Inactive"
 }
 
 const Users: React.FC = () => {
-  const [users, setUsers] = useState<UserData[]>([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@example.com",
-      role: "Admin",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      role: "Editor",
-      status: "Inactive",
-    },
-    {
-      id: 3,
-      name: "Bob Johnson",
-      email: "bob.johnson@example.com",
-      role: "Viewer",
-      status: "Active",
-    },
-  ]);
-
+  const [customers, setCustomers] = useState<CustomerData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState<Partial<UserData>>({});
+  const [currentCustomer, setCurrentCustomer] = useState<Partial<CustomerData>>(
+    {}
+  );
   const [isEdit, setIsEdit] = useState(false);
 
-  const handleOpenModal = (user?: UserData) => {
-    if (user) {
-      setCurrentUser(user);
+  // Fetch customers from the API
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get("/Customer");
+      setCustomers(response.data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to fetch customers.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const handleOpenModal = (customer?: CustomerData) => {
+    if (customer) {
+      setCurrentCustomer(customer);
       setIsEdit(true);
     } else {
-      setCurrentUser({});
+      setCurrentCustomer({});
       setIsEdit(false);
     }
     setShowModal(true);
   };
 
-  const handleSaveUser = (user: UserData) => {
-    if (isEdit) {
-      setUsers((prevUsers) =>
-        prevUsers.map((u) => (u.id === user.id ? { ...u, ...user } : u))
-      );
-    } else {
-      setUsers((prevUsers) => [
-        ...prevUsers,
-        { ...user, id: prevUsers.length + 1 },
-      ]);
+  const handleSaveCustomer = async (customer: CustomerData) => {
+    try {
+      if (isEdit) {
+        await apiClient.put(`/Customer/${customer.userID}`, customer);
+      } else {
+        await apiClient.post("/Customer", customer);
+      }
+      fetchCustomers();
+    } catch (err) {
+      setError("Failed to save customer.");
     }
     setShowModal(false);
   };
 
-  const handleDeleteUser = (id: number) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+  const handleDeleteCustomer = async (id: number) => {
+    try {
+      await apiClient.delete(`/Customer/${id}`);
+      setCustomers((prevCustomers) =>
+        prevCustomers.filter((customer) => customer.userID !== id)
+      );
+    } catch (err) {
+      setError("Failed to delete customer.");
+    }
   };
 
   return (
     <Card className="p-4 shadow-sm">
       <Row className="mb-4">
         <Col>
-          <h2>Users</h2>
+          <h2>Customers</h2>
         </Col>
         <Col className="text-end">
           <Button variant="primary" onClick={() => handleOpenModal()}>
-            + Add New User
+            + Add New Customer
           </Button>
         </Col>
       </Row>
-      <Table responsive bordered hover className="align-middle">
-        <thead className="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
-              <td>
-                {user.status === "Active" ? (
-                  <Badge bg="success">Active</Badge>
-                ) : (
-                  <Badge bg="danger">Inactive</Badge>
-                )}
-              </td>
-              <td>
-                <Button
-                  variant="info"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => handleOpenModal(user)}
-                >
-                  <i className="bi bi-pencil-square"></i>
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDeleteUser(user.id)}
-                >
-                  <i className="bi bi-trash"></i>
-                </Button>
-              </td>
+
+      {loading ? (
+        <Spinner animation="border" />
+      ) : error ? (
+        <p className="text-danger">{error}</p>
+      ) : (
+        <Table responsive bordered hover className="align-middle">
+          <thead className="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {customers.map((customer) => (
+              <tr key={customer.userID}>
+                <td>{customer.userID}</td>
+                <td>{customer.name}</td>
+                <td>{customer.email}</td>
+                <td>{customer.role}</td>
+                <td>
+                  {customer.status === "Active" ? (
+                    <Badge bg="success">Active</Badge>
+                  ) : (
+                    <Badge bg="danger">Inactive</Badge>
+                  )}
+                </td>
+                <td>
+                  <Button
+                    variant="info"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => handleOpenModal(customer)}
+                  >
+                    <i className="bi bi-pencil-square"></i>
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleDeleteCustomer(customer.userID)}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+
       <UserModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        onSave={handleSaveUser}
-        initialUser={currentUser}
+        onSave={handleSaveCustomer}
+        initialUser={currentCustomer}
         isEdit={isEdit}
       />
     </Card>

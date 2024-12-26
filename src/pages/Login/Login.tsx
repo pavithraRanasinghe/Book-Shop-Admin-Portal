@@ -27,7 +27,7 @@ const Login: React.FC = () => {
       // Redirect to a dashboard or homepage
       if (role === "Admin") {
         navigate("/admin/dashboard");
-      } else if (role === "customer") {
+      } else if (role === "Customer") {
         navigate("/");
       } else {
         console.log("Unknown role. Please contact support.");

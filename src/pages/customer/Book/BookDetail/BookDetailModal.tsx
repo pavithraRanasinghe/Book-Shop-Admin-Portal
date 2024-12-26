@@ -6,7 +6,7 @@ import { BookData } from "../../model/Book";
 interface BookDetailModalProps {
   show: boolean;
   onClose: () => void;
-  book: BookData | undefined;
+  book: BookData | null;
   onAddToCart: (book: BookData) => void;
 }
 
@@ -26,7 +26,7 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
       <Modal.Body>
         <div className={styles.modalContent}>
           <img
-            src={book.image}
+            src={book.image || "/path/to/default-image.jpg"} // Use default image if not provided
             alt={book.title}
             className={styles.modalImage}
           />
@@ -38,9 +38,23 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
               <strong>Price:</strong> ${book.price.toFixed(2)}
             </p>
             <p>
-              <strong>Category:</strong> {book.category}
+              <strong>Genre:</strong> {book.genre || "Not specified"}
             </p>
-            <p>{book.description}</p>
+            <p>
+              <strong>Stock:</strong> {book.stockQuantity}
+            </p>
+            {book.isbn && (
+              <p>
+                <strong>ISBN:</strong> {book.isbn}
+              </p>
+            )}
+            {book.publishedDate && (
+              <p>
+                <strong>Published Date:</strong>{" "}
+                {new Date(book.publishedDate).toLocaleDateString()}
+              </p>
+            )}
+            {book.description && <p>{book.description}</p>}
           </div>
         </div>
       </Modal.Body>
@@ -48,7 +62,13 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
         <Button variant="secondary" onClick={onClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => onAddToCart(book)}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            onAddToCart(book);
+            onClose(); // Optionally close modal after adding to cart
+          }}
+        >
           Add to Cart
         </Button>
       </Modal.Footer>
