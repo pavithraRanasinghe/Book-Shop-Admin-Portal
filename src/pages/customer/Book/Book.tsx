@@ -119,7 +119,7 @@ const BookPage: React.FC = () => {
                             variant="primary"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleAddToCart(book);
+                              handleViewDetails(book);
                             }}
                             className={styles.addToCartButton}
                           >
@@ -138,7 +138,6 @@ const BookPage: React.FC = () => {
           show={showModal}
           onClose={() => setShowModal(false)}
           book={selectedBook}
-          onAddToCart={handleAddToCart}
         />
       </Container>
     </div>

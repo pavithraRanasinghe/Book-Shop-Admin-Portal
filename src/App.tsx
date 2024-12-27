@@ -5,13 +5,10 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/customer/Register/Register";
 import CustomerRoutes from "./routes/CustomerRoutes";
 
-// Helper function to check authentication and role
 const getUserRole = () => {
-  // Retrieve the user role and token from localStorage
-  const token = localStorage.getItem("authToken");
   const role = localStorage.getItem("role");
 
-  if (!token || !role) return null;
+  if (!role) return null;
 
   return role;
 };

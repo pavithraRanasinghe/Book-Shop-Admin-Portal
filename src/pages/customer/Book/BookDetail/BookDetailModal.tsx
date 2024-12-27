@@ -1,22 +1,62 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Modal, Button, FormControl, InputGroup, Alert } from "react-bootstrap";
+import axios from "axios";
 import styles from "./BookDetail.module.css";
 import { BookData } from "../../model/Book";
+import apiClient from "../../../../configs/ApiClient";
 
 interface BookDetailModalProps {
   show: boolean;
   onClose: () => void;
   book: BookData | null;
-  onAddToCart: (book: BookData) => void;
 }
 
 const BookDetailModal: React.FC<BookDetailModalProps> = ({
   show,
   onClose,
   book,
-  onAddToCart,
 }) => {
+  const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   if (!book) return null;
+
+  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Math.max(
+      1,
+      Math.min(book.stockQuantity, Number(event.target.value))
+    );
+    setQuantity(value);
+  };
+
+  const handleAddToCart = async () => {
+    // Validate quantity before calling the API
+    if (quantity < 1 || quantity > book.stockQuantity) {
+      setError("Please enter a valid quantity within the available stock.");
+      setSuccess(null);
+      return;
+    }
+
+    try {
+      const userId = localStorage.getItem("userId");
+
+      await apiClient.post("/Cart", {
+        UserID: parseInt(userId || "0"),
+        BookID: book.bookID,
+        Quantity: quantity,
+      });
+
+      setSuccess("Book successfully added to cart!");
+      setError(null);
+
+      // Optionally close modal after success
+      setTimeout(onClose, 1500);
+    } catch (err: any) {
+      setError("Failed to add to cart. Please try again.");
+      setSuccess(null);
+    }
+  };
 
   return (
     <Modal show={show} onHide={onClose} centered>
@@ -57,6 +97,21 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
             {book.description && <p>{book.description}</p>}
           </div>
         </div>
+        <div className="mt-3">
+          <strong>Quantity:</strong>
+          <InputGroup className="mt-2">
+            <FormControl
+              type="number"
+              min={1}
+              max={book.stockQuantity}
+              value={quantity}
+              onChange={handleQuantityChange}
+            />
+          </InputGroup>
+          <p className="text-muted">Max available: {book.stockQuantity}</p>
+        </div>
+        {error && <Alert variant="danger">{error}</Alert>}
+        {success && <Alert variant="success">{success}</Alert>}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
@@ -64,10 +119,8 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
         </Button>
         <Button
           variant="primary"
-          onClick={() => {
-            onAddToCart(book);
-            onClose(); // Optionally close modal after adding to cart
-          }}
+          onClick={handleAddToCart}
+          disabled={quantity < 1 || quantity > book.stockQuantity}
         >
           Add to Cart
         </Button>

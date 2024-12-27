@@ -23,6 +23,7 @@ const Login: React.FC = () => {
       // Store token (e.g., localStorage or context)
       localStorage.setItem("authToken", token);
       localStorage.setItem("role", role);
+      localStorage.setItem("userId", response.data.id);
 
       // Redirect to a dashboard or homepage
       if (role === "Admin") {
