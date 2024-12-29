@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Offcanvas,
   Button,
@@ -7,6 +7,7 @@ import {
   Col,
   Image,
   Spinner,
+  Form,
 } from "react-bootstrap";
 import styles from "./Cart.module.css";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +16,7 @@ import apiClient from "../../../configs/ApiClient";
 interface Book {
   bookID: number;
   title: string;
-  author: string;
-  genre: string;
   price: number;
-  stockQuantity: number;
-  isbn: string;
-  publishedDate: string;
 }
 
 interface CartItem {
@@ -43,14 +39,15 @@ const Cart: React.FC<CartOffcanvasProps> = ({
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<string>(""); // For capturing payment method
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
   const fetchCartDetails = async () => {
     setLoading(true);
     setError(null);
     try {
-      const userId = localStorage.getItem("userId");
-
       const response = await apiClient.get(`/Cart/user/${userId}`);
       setCartItems(response.data.cartItems); // Extract cartItems from the response
     } catch (err: any) {
@@ -60,21 +57,37 @@ const Cart: React.FC<CartOffcanvasProps> = ({
     }
   };
 
+  const handleCheckout = async () => {
+    if (!paymentMethod) {
+      setCheckoutError("Please select a payment method.");
+      return;
+    }
+
+    try {
+      const response = await apiClient.post("/Order", {
+        userID: userId,
+        paymentMethod,
+      });
+      console.log("Order placed successfully:", response.data);
+      alert("Order placed successfully!");
+      onClose();
+      navigate("/books");
+    } catch (err: any) {
+      setCheckoutError(err.response?.data || "Failed to process checkout.");
+    }
+  };
+
   useEffect(() => {
     if (show) {
       fetchCartDetails();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.book.price * item.quantity,
     0
   );
-
-  const onCheckout = () => {
-    onClose();
-    navigate("/checkout");
-  };
 
   return (
     <Offcanvas
@@ -112,7 +125,7 @@ const Cart: React.FC<CartOffcanvasProps> = ({
                   <Row>
                     <Col xs={3}>
                       <Image
-                        src={`/images/${item.book.bookID}.jpg`} // Replace with actual image URL if available
+                        src={`/images/${item.book.bookID}.jpg`} // Replace with actual image URL
                         alt={item.book.title}
                         fluid
                         rounded
@@ -142,10 +155,25 @@ const Cart: React.FC<CartOffcanvasProps> = ({
               <p>
                 <strong>Total:</strong> ${totalPrice.toFixed(2)}
               </p>
+              <Form.Group className="mb-3">
+                <Form.Label>Select Payment Method</Form.Label>
+                <Form.Select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                >
+                  <option value="" disabled hidden>
+                    -- Choose Payment Method --
+                  </option>
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Cash on Delivery">Cash on Delivery</option>
+                </Form.Select>
+              </Form.Group>
+              {checkoutError && <p className={styles.error}>{checkoutError}</p>}
               <Button
                 variant="primary"
-                onClick={onCheckout}
+                onClick={handleCheckout}
                 className={styles.checkoutButton}
+                disabled={!paymentMethod}
               >
                 Checkout
               </Button>

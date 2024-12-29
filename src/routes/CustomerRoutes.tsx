@@ -4,6 +4,7 @@ import CustomerLayout from "../components/CustomerLayout/CustomerLayout";
 import Home from "../pages/customer/Home/Home";
 import Book from "../pages/customer/Book/Book";
 import Checkout from "../pages/customer/Checkout/Checkout";
+import CustomerOrders from "../pages/customer/Orders/Orders";
 
 const CustomerRoutes: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const CustomerRoutes: React.FC = () => {
         <Route index element={<Home />} />
         <Route path="books" element={<Book />} />
         <Route path="checkout" element={<Checkout />} />
+        <Route path="order" element={<CustomerOrders />} />
         {/* <Route path="register" element={<Register />} /> */}
         {/* <Route path="login" element={<Login />} /> */}
       </Route>

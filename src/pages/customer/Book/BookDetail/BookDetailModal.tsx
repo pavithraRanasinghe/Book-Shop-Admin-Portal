@@ -49,7 +49,6 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
       setSuccess("Book successfully added to cart!");
       setError(null);
 
-      // Optionally close modal after success
       setTimeout(onClose, 1500);
     } catch (err: any) {
       setError("Failed to add to cart. Please try again.");
