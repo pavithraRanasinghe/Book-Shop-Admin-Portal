@@ -67,21 +67,30 @@ const CustomerOrders: React.FC = () => {
     }
   };
 
-  // Remove order functionality
-  const handleRemoveOrder = async (orderID: number) => {
-    try {
-      await apiClient.delete(`/Order/${orderID}`); // API endpoint to delete an order
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order.orderID !== orderID)
-      );
-      setFilteredOrders((prevOrders) =>
-        prevOrders.filter((order) => order.orderID !== orderID)
-      );
-      alert(`Order #${orderID} has been removed.`);
-    } catch (err) {
-      alert("Failed to remove the order. Please try again.");
-    }
-  };
+ const handleRemoveOrder = async (orderID: number) => {
+   try {
+     const response = await apiClient.delete(`/Order/${orderID}`); // Send DELETE request to the API
+
+     if (response.status === 200) {
+       // Update the orders state to reflect the removed order
+       setOrders((prevOrders) =>
+         prevOrders.filter((order) => order.orderID !== orderID)
+       );
+       setFilteredOrders((prevOrders) =>
+         prevOrders.filter((order) => order.orderID !== orderID)
+       );
+
+       alert(response.data); // Display success message from API
+     }
+   } catch (err: any) {
+     if (err.response && err.response.status === 404) {
+       alert(`Error: ${err.response.data}`); // Display error message for not found
+     } else {
+       alert("Failed to remove the order. Please try again later.");
+     }
+   }
+ };
+
 
   useEffect(() => {
     fetchOrders();
