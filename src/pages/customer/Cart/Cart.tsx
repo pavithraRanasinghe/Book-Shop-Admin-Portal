@@ -1,32 +1,73 @@
-import React from "react";
-import { Offcanvas, Button, ListGroup, Row, Col, Image } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import {
+  Offcanvas,
+  Button,
+  ListGroup,
+  Row,
+  Col,
+  Image,
+  Spinner,
+} from "react-bootstrap";
 import styles from "./Cart.module.css";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../../../configs/ApiClient";
+
+interface Book {
+  bookID: number;
+  title: string;
+  author: string;
+  genre: string;
+  price: number;
+  stockQuantity: number;
+  isbn: string;
+  publishedDate: string;
+}
 
 interface CartItem {
-  id: number;
-  title: string;
-  price: number;
+  cartItemID: number;
+  book: Book;
   quantity: number;
-  image: string;
 }
 
 interface CartOffcanvasProps {
   show: boolean;
   onClose: () => void;
-  cartItems: CartItem[]; // Pass cart items using updated book data
-  onRemoveItem: (id: number) => void;
+  onRemoveItem: (cartItemID: number) => void;
 }
 
 const Cart: React.FC<CartOffcanvasProps> = ({
   show,
   onClose,
-  cartItems,
   onRemoveItem,
 }) => {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const fetchCartDetails = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const userId = localStorage.getItem("userId");
+
+      const response = await apiClient.get(`/Cart/user/${userId}`);
+      setCartItems(response.data.cartItems); // Extract cartItems from the response
+    } catch (err: any) {
+      setError(err.response?.data || "Failed to fetch cart details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (show) {
+      fetchCartDetails();
+    }
+  }, [show]);
+
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.book.price * item.quantity,
     0
   );
 
@@ -46,7 +87,17 @@ const Cart: React.FC<CartOffcanvasProps> = ({
         <Offcanvas.Title>Your Cart</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
-        {cartItems.length === 0 ? (
+        {loading ? (
+          <div className={styles.loading}>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        ) : error ? (
+          <div className={styles.error}>
+            <p>{error}</p>
+          </div>
+        ) : cartItems.length === 0 ? (
           <div className={styles.emptyCart}>
             <p>Your cart is empty!</p>
           </div>
@@ -54,28 +105,31 @@ const Cart: React.FC<CartOffcanvasProps> = ({
           <>
             <ListGroup>
               {cartItems.map((item) => (
-                <ListGroup.Item key={item.id} className={styles.cartItem}>
+                <ListGroup.Item
+                  key={item.cartItemID}
+                  className={styles.cartItem}
+                >
                   <Row>
                     <Col xs={3}>
                       <Image
-                        src={item.image}
-                        alt={item.title}
+                        src={`/images/${item.book.bookID}.jpg`} // Replace with actual image URL if available
+                        alt={item.book.title}
                         fluid
                         rounded
                         className={styles.cartItemImage}
                       />
                     </Col>
                     <Col xs={6}>
-                      <p className={styles.itemTitle}>{item.title}</p>
+                      <p className={styles.itemTitle}>{item.book.title}</p>
                       <p className={styles.itemPrice}>
-                        ${item.price.toFixed(2)} x {item.quantity}
+                        ${item.book.price.toFixed(2)} x {item.quantity}
                       </p>
                     </Col>
                     <Col xs={3} className="text-end">
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => onRemoveItem(item.id)}
+                        onClick={() => onRemoveItem(item.cartItemID)}
                       >
                         Remove
                       </Button>

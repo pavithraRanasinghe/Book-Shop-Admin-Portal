@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Modal, Button, FormControl, InputGroup, Alert } from "react-bootstrap";
-import axios from "axios";
 import styles from "./BookDetail.module.css";
 import { BookData } from "../../model/Book";
 import apiClient from "../../../../configs/ApiClient";
