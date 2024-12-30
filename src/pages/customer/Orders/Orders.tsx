@@ -69,7 +69,7 @@ const CustomerOrders: React.FC = () => {
 
  const handleRemoveOrder = async (orderID: number) => {
    try {
-     const response = await apiClient.delete(`/Order/${orderID}`); // Send DELETE request to the API
+     const response = await apiClient.delete(`/Order/${orderID}`);
 
      if (response.status === 200) {
        // Update the orders state to reflect the removed order
@@ -80,7 +80,7 @@ const CustomerOrders: React.FC = () => {
          prevOrders.filter((order) => order.orderID !== orderID)
        );
 
-       alert(response.data); // Display success message from API
+       alert(response.data);
      }
    } catch (err: any) {
      if (err.response && err.response.status === 404) {

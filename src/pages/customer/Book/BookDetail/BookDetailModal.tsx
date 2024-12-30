@@ -3,6 +3,7 @@ import { Modal, Button, FormControl, InputGroup, Alert } from "react-bootstrap";
 import styles from "./BookDetail.module.css";
 import { BookData } from "../../model/Book";
 import apiClient from "../../../../configs/ApiClient";
+import FeedbackSection from "../../FeedbackSection/FeedbackSection";
 
 interface BookDetailModalProps {
   show: boolean;
@@ -18,6 +19,7 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const userId = localStorage.getItem("userId");
 
   if (!book) return null;
 
@@ -38,8 +40,6 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
     }
 
     try {
-      const userId = localStorage.getItem("userId");
-
       await apiClient.post("/Cart", {
         UserID: parseInt(userId || "0"),
         BookID: book.bookID,
@@ -110,6 +110,7 @@ const BookDetailModal: React.FC<BookDetailModalProps> = ({
         </div>
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
+        {userId && <FeedbackSection bookId={book.bookID} />}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>

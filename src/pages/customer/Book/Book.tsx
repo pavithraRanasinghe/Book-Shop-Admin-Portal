@@ -19,7 +19,6 @@ const BookPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [cart, setCart] = useState<BookData[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedBook, setSelectedBook] = useState<BookData | null>(null);
 
@@ -49,11 +48,6 @@ const BookPage: React.FC = () => {
     const term = e.target.value;
     setSearchTerm(term);
     fetchBooks(term); // Fetch books based on search term
-  };
-
-  const handleAddToCart = (book: BookData) => {
-    setCart((prevCart) => [...prevCart, book]);
-    alert(`${book.title} has been added to your cart!`);
   };
 
   const handleViewDetails = (book: BookData) => {
