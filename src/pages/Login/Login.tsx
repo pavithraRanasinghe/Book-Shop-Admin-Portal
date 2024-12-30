@@ -97,7 +97,12 @@ const Login: React.FC = () => {
 
             <div className={styles.divider}>or</div>
 
-            <Button className={styles.googleButton}>Sign Up</Button>
+            <Button
+              onClick={() => navigate("/register")}
+              className={styles.googleButton}
+            >
+              Sign Up
+            </Button>
           </Form>
         </div>
       </div>

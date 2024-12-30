@@ -57,12 +57,7 @@ const Header: React.FC = () => {
           <div className={styles.iconLink} onClick={() => setShowCart(true)}>
             <i className="bi bi-cart-check"></i>
           </div>
-          <Link to="/notifications" className={styles.iconLink}>
-            <i className="bi bi-envelope position-relative">
-              <span className={styles.notificationDot}></span>
-            </i>
-          </Link>
-          <Link to="/profile" className={styles.iconLink}>
+          <Link to="/login" className={styles.iconLink}>
             <Image
               src={profileImage}
               roundedCircle

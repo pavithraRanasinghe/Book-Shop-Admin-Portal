@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import styles from "./Register.module.css";
 import loginImage from "../../../assets/images/1326370.png";
+import apiClient from "../../../configs/ApiClient";
+import { useNavigate } from "react-router-dom";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,42 +11,74 @@ const Register: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    address: "",
+    phone: "",
   });
   const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
+      setSuccess("");
       return;
     }
 
-    // Simulate registration (replace with actual API call)
-    alert("Registration successful! (Replace with actual registration logic)");
-    setError("");
+    try {
+      const requestData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        address: formData.address,
+        phone: formData.phone,
+      };
+
+      const response = await apiClient.post("/Customer/register", requestData);
+      setSuccess(response.data);
+      setError("");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        address: "",
+        phone: "",
+      });
+
+      navigate("/login");
+    } catch (err: any) {
+      if (err.response && err.response.data) {
+        setError(err.response.data); // Display error message from API
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+      setSuccess("");
+    }
   };
 
   return (
     <div className={styles.registerPage}>
       <div className={styles.registerContainer}>
-        {/* Left Section - Image and Text */}
         <div className={styles.leftSection}>
           <div className={styles.imageWrapper}>
             <img src={loginImage} alt="Register" className={styles.leftImage} />
           </div>
         </div>
 
-        {/* Right Section - Registration Form */}
         <div className={styles.rightSection}>
           <h2 className={styles.logo}>Create Account</h2>
-          <Form onSubmit={handleSubmit} className={styles.registerForm}>
+          <Form className={styles.registerForm}>
             {error && <Alert variant="danger">{error}</Alert>}
+            {success && <Alert variant="success">{success}</Alert>}
+
             <Form.Group controlId="formName" className="mb-3">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
@@ -64,6 +98,30 @@ const Register: React.FC = () => {
                 placeholder="Enter your email"
                 name="email"
                 value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formAddress" className="mb-3">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formPhone" className="mb-3">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your phone number"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 required
               />
@@ -93,7 +151,11 @@ const Register: React.FC = () => {
               />
             </Form.Group>
 
-            <Button type="submit" className={`w-100 ${styles.registerButton}`}>
+            <Button
+              type="submit"
+              onClick={handleSubmit}
+              className={`w-100 ${styles.registerButton}`}
+            >
               Register
             </Button>
 
