@@ -1,12 +1,31 @@
-import React from "react";
-import { Modal, Button, Form, Badge } from "react-bootstrap";
+// Updated OrderModal Component
+import React, { useState } from "react";
+import { Modal, Button, Form, Badge, Table, Alert } from "react-bootstrap";
+import apiClient from "../../../../configs/ApiClient";
+
+interface Book {
+  bookID: number;
+  title: string;
+  author: string;
+  price: number;
+}
+
+interface OrderItem {
+  orderItemID: number;
+  bookID: number;
+  quantity: number;
+  subtotal: number;
+  book: Book;
+}
 
 interface Order {
-  id: number;
+  orderID: number;
+  userID: number;
   customer: string;
-  date: string;
-  status: string;
-  total: number;
+  orderDate: string;
+  totalAmount: number;
+  orderStatus: string;
+  orderItems: OrderItem[];
 }
 
 interface OrderModalProps {
@@ -14,7 +33,7 @@ interface OrderModalProps {
   onClose: () => void;
   order: Partial<Order>;
   isViewOnly: boolean;
-  onUpdateStatus: (id: number, status: string) => void;
+  onStatusUpdate: (orderID: number, newStatus: string) => void;
 }
 
 const OrderModal: React.FC<OrderModalProps> = ({
@@ -22,48 +41,94 @@ const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   order,
   isViewOnly,
-  onUpdateStatus,
+  onStatusUpdate,
 }) => {
-  const handleStatusChange = (status: string) => {
-    if (order.id) {
-      onUpdateStatus(order.id, status);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const handleStatusChange = async (status: string) => {
+    if (!order.orderID) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await apiClient.put(`/Order/${order.orderID}/status`, {
+        newStatus: status,
+      });
+      onStatusUpdate(order.orderID, status);
+      console.log(response.data);
       onClose();
+    } catch (err: any) {
+      setError(
+        err.response?.data || "Failed to update order status. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Modal show={show} onHide={onClose} centered>
+    <Modal show={show} onHide={onClose} centered size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Order #{order.id}</Modal.Title>
+        <Modal.Title>{order.customer}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {error && <Alert variant="danger">{error}</Alert>}
         <p>
-          <strong>Customer:</strong> {order.customer}
+          <strong>Customer:</strong> User #{order.userID}
         </p>
         <p>
-          <strong>Date:</strong> {order.date}
+          <strong>Date:</strong>{" "}
+          {new Date(order.orderDate || "").toLocaleString()}
         </p>
         <p>
-          <strong>Total:</strong> ${order.total?.toFixed(2)}
+          <strong>Total:</strong> ${order.totalAmount?.toFixed(2)}
         </p>
         <p>
           <strong>Status:</strong>{" "}
-          {order.status === "Pending" ? (
+          {order.orderStatus === "Pending" ? (
             <Badge bg="warning" text="dark">
               Pending
             </Badge>
-          ) : order.status === "Delivered" ? (
+          ) : order.orderStatus === "Delivered" ? (
             <Badge bg="success">Delivered</Badge>
           ) : (
             <Badge bg="danger">Canceled</Badge>
           )}
         </p>
+
+        <h5>Order Items</h5>
+        <Table responsive bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Price ($)</th>
+              <th>Quantity</th>
+              <th>Subtotal ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order.orderItems?.map((item, index) => (
+              <tr key={item.orderItemID}>
+                <td>{index + 1}</td>
+                <td>{item.book.title}</td>
+                <td>{item.book.author}</td>
+                <td>{item.book.price.toFixed(2)}</td>
+                <td>{item.quantity}</td>
+                <td>{item.subtotal.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
         {!isViewOnly && (
           <Form>
             <Form.Group controlId="formStatus">
               <Form.Label>Update Status</Form.Label>
               <Form.Select
-                defaultValue={order.status || "Pending"}
+                defaultValue={order.orderStatus || "Pending"}
                 onChange={(e) => handleStatusChange(e.target.value)}
               >
                 <option value="Pending">Pending</option>
@@ -82,6 +147,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
           <Button
             variant="primary"
             onClick={() => handleStatusChange("Delivered")}
+            disabled={loading}
           >
             Mark as Delivered
           </Button>

@@ -1,43 +1,70 @@
-import React, { useState } from "react";
-import { Table, Button, Badge, Card, Row, Col } from "react-bootstrap";
+// Updated Orders Component
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Button,
+  Badge,
+  Card,
+  Row,
+  Col,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
 import OrderModal from "./component/OrderModal";
+import apiClient from "../../../configs/ApiClient"; // Import your Axios instance
+
+interface Book {
+  bookID: number;
+  title: string;
+  author: string;
+  price: number;
+}
+
+interface OrderItem {
+  orderItemID: number;
+  bookID: number;
+  quantity: number;
+  subtotal: number;
+  book: Book;
+}
 
 interface OrderData {
-  id: number;
+  orderID: number;
+  userID: number;
   customer: string;
-  date: string;
-  status: string; // e.g., "Pending", "Delivered", "Canceled"
-  total: number;
+  orderDate: string;
+  totalAmount: number;
+  orderStatus: string;
+  orderItems: OrderItem[];
 }
 
 const Orders: React.FC = () => {
-  const [orders, setOrders] = useState<OrderData[]>([
-    {
-      id: 101,
-      customer: "John Doe",
-      date: "2024-11-27",
-      status: "Pending",
-      total: 150.75,
-    },
-    {
-      id: 102,
-      customer: "Jane Smith",
-      date: "2024-11-26",
-      status: "Delivered",
-      total: 200.0,
-    },
-    {
-      id: 103,
-      customer: "Bob Johnson",
-      date: "2024-11-25",
-      status: "Canceled",
-      total: 0,
-    },
-  ]);
-
+  const [orders, setOrders] = useState<OrderData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<Partial<OrderData>>({});
   const [isViewOnly, setIsViewOnly] = useState(false);
+
+  // Fetch orders from the API
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await apiClient.get("/Order");
+        setOrders(response.data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(
+          err.response?.data ||
+            "Failed to fetch orders. Please try again later."
+        );
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const handleOpenModal = (order: OrderData, viewOnly: boolean = false) => {
     setCurrentOrder(order);
@@ -48,7 +75,7 @@ const Orders: React.FC = () => {
   const handleUpdateStatus = (id: number, status: string) => {
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
-        order.id === id ? { ...order, status } : order
+        order.orderID === id ? { ...order, orderStatus: status } : order
       )
     );
   };
@@ -60,62 +87,74 @@ const Orders: React.FC = () => {
           <h2>Customer Orders</h2>
         </Col>
       </Row>
-      <Table responsive bordered hover className="align-middle">
-        <thead className="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Customer</th>
-            <th>Order Date</th>
-            <th>Status</th>
-            <th>Total ($)</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.customer}</td>
-              <td>{order.date}</td>
-              <td>
-                {order.status === "Pending" ? (
-                  <Badge bg="warning" text="dark">
-                    Pending
-                  </Badge>
-                ) : order.status === "Delivered" ? (
-                  <Badge bg="success">Delivered</Badge>
-                ) : (
-                  <Badge bg="danger">Canceled</Badge>
-                )}
-              </td>
-              <td>${order.total.toFixed(2)}</td>
-              <td>
-                <Button
-                  variant="info"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => handleOpenModal(order, true)}
-                >
-                  <i className="bi bi-eye"></i>
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleOpenModal(order)}
-                >
-                  <i className="bi bi-pencil"></i>
-                </Button>
-              </td>
+      {loading && (
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
+      {error && (
+        <Alert variant="danger" className="text-center">
+          {error}
+        </Alert>
+      )}
+      {!loading && !error && (
+        <Table responsive bordered hover className="align-middle">
+          <thead className="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Order Date</th>
+              <th>Status</th>
+              <th>Total ($)</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.orderID}>
+                <td>{order.orderID}</td>
+                <td>{order.customer}</td>
+                <td>{new Date(order.orderDate).toLocaleString()}</td>
+                <td>
+                  {order.orderStatus === "Pending" ? (
+                    <Badge bg="warning" text="dark">
+                      Pending
+                    </Badge>
+                  ) : order.orderStatus === "Delivered" ? (
+                    <Badge bg="success">Delivered</Badge>
+                  ) : (
+                    <Badge bg="danger">Canceled</Badge>
+                  )}
+                </td>
+                <td>${order.totalAmount.toFixed(2)}</td>
+                <td>
+                  <Button
+                    variant="info"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => handleOpenModal(order, true)}
+                  >
+                    <i className="bi bi-eye"></i>
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleOpenModal(order)}
+                  >
+                    <i className="bi bi-pencil"></i>
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
       <OrderModal
         show={showModal}
         onClose={() => setShowModal(false)}
         order={currentOrder}
         isViewOnly={isViewOnly}
-        onUpdateStatus={handleUpdateStatus}
+        onStatusUpdate={handleUpdateStatus}
       />
     </Card>
   );
