@@ -1,63 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Table } from "react-bootstrap";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import apiClient from "../../../configs/ApiClient";
 
 const Dashboard: React.FC = () => {
-  const stats = {
-    books: 123,
-    users: 45,
-    orders: 67,
-    revenue: 3456.78,
+  const [stats, setStats] = useState<any>(null);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  // Fetch Stats
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get("/Dashboard/stats");
+      setStats(response.data);
+      setLoading(false);
+    } catch (err: any) {
+      setError(
+        err.response?.data || "Failed to fetch stats. Please try again later."
+      );
+      setLoading(false);
+    }
   };
 
-  const recentOrders = [
-    {
-      id: 101,
-      customer: "John Doe",
-      date: "2024-11-27",
-      status: "Pending",
-      total: 150.75,
-    },
-    {
-      id: 102,
-      customer: "Jane Smith",
-      date: "2024-11-26",
-      status: "Delivered",
-      total: 200.0,
-    },
-    {
-      id: 103,
-      customer: "Bob Johnson",
-      date: "2024-11-25",
-      status: "Canceled",
-      total: 0,
-    },
-  ];
-
-  const chartData = {
-    labels: [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ],
-    datasets: [
-      {
-        label: "Orders",
-        data: [12, 19, 8, 15, 10, 22, 18],
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-      },
-      {
-        label: "Revenue ($)",
-        data: [200, 300, 150, 400, 250, 500, 350],
-        backgroundColor: "rgba(153, 102, 255, 0.6)",
-      },
-    ],
+  // Fetch Recent Orders
+  const fetchRecentOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get("/Dashboard/recent-orders");
+      setRecentOrders(response.data);
+      setLoading(false);
+    } catch (err: any) {
+      setError(
+        err.response?.data ||
+          "Failed to fetch recent orders. Please try again later."
+      );
+      setLoading(false);
+    }
   };
+
+  // Fetch Chart Data
+  // const fetchChartData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await apiClient.get("/Dashboard/chart-data");
+  //     setChartData(response.data);
+  //     setLoading(false);
+  //   } catch (err: any) {
+  //     setError(
+  //       err.response?.data ||
+  //         "Failed to fetch chart data. Please try again later."
+  //     );
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Fetch data when the component is mounted
+  useEffect(() => {
+    fetchStats();
+    fetchRecentOrders();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="dashboard">
@@ -67,7 +75,7 @@ const Dashboard: React.FC = () => {
           <Card className="p-3 shadow-sm">
             <Card.Body>
               <Card.Title>Total Books</Card.Title>
-              <h4 className="text-primary">{stats.books}</h4>
+              <h4 className="text-primary">{stats?.books}</h4>
             </Card.Body>
           </Card>
         </Col>
@@ -75,7 +83,7 @@ const Dashboard: React.FC = () => {
           <Card className="p-3 shadow-sm">
             <Card.Body>
               <Card.Title>Total Users</Card.Title>
-              <h4 className="text-primary">{stats.users}</h4>
+              <h4 className="text-primary">{stats?.users}</h4>
             </Card.Body>
           </Card>
         </Col>
@@ -83,7 +91,7 @@ const Dashboard: React.FC = () => {
           <Card className="p-3 shadow-sm">
             <Card.Body>
               <Card.Title>Total Orders</Card.Title>
-              <h4 className="text-primary">{stats.orders}</h4>
+              <h4 className="text-primary">{stats?.orders}</h4>
             </Card.Body>
           </Card>
         </Col>
@@ -91,7 +99,7 @@ const Dashboard: React.FC = () => {
           <Card className="p-3 shadow-sm">
             <Card.Body>
               <Card.Title>Total Revenue</Card.Title>
-              <h4 className="text-primary">${stats.revenue.toFixed(2)}</h4>
+              <h4 className="text-primary">${stats?.revenue.toFixed(2)}</h4>
             </Card.Body>
           </Card>
         </Col>
@@ -99,15 +107,15 @@ const Dashboard: React.FC = () => {
 
       {/* Charts and Recent Orders */}
       <Row className="gx-3">
-        <Col md={6}>
+        {/* <Col md={6}>
           <Card className="p-3 shadow-sm h-100">
             <Card.Body>
               <Card.Title>Orders and Revenue Trend</Card.Title>
               <Bar data={chartData} />
             </Card.Body>
           </Card>
-        </Col>
-        <Col md={6}>
+        </Col> */}
+        <Col>
           <Card className="p-3 shadow-sm h-100">
             <Card.Body>
               <Card.Title>Recent Orders</Card.Title>
