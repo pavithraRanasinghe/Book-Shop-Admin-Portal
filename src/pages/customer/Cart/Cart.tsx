@@ -89,6 +89,17 @@ const Cart: React.FC<CartOffcanvasProps> = ({
     0
   );
 
+  // New function for removing items
+  const handleRemoveItem = async (cartItemID: number, bookID: number) => {
+    try {
+      await apiClient.delete(`/Cart/remove/${userId}/${bookID}`);
+      fetchCartDetails();
+    } catch (err: any) {
+      console.error("Failed to remove item:", err);
+      setError(err.response?.data || "Failed to remove item from the cart.");
+    }
+  };
+
   return (
     <Offcanvas
       show={show}
@@ -142,7 +153,9 @@ const Cart: React.FC<CartOffcanvasProps> = ({
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => onRemoveItem(item.cartItemID)}
+                        onClick={() =>
+                          handleRemoveItem(item.cartItemID, item.book.bookID)
+                        }
                       >
                         Remove
                       </Button>

@@ -29,7 +29,7 @@ const Layout: React.FC = () => {
             <div className={styles.dateTime}>{dateTime}</div>
 
             <Nav>
-              <Nav.Link href="#profile" className={styles.profile}>
+              <Nav.Link href="/login" className={styles.profile}>
                 <img
                   src={profileImage}
                   alt="Profile"
